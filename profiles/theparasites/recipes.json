@@ -1,0 +1,46 @@
+{
+  "game": "TheParasites",
+  "notes": "Game-specific actions on top of the generic tools. Kinds: 'lua' (code run via lua_run in the UE4SS hook state) or 'calls' (steps of {tool, params}). {{name}} substitutes recipe args. Entries marked TODO still need the real function/property names confirmed in game.",
+  "recipes": {
+    "time_of_day": {
+      "description": "Set Ultra Dynamic Sky time of day (0..2400).",
+      "kind": "lua",
+      "args": [ { "name": "time", "required": true } ],
+      "code": "local sky = FindFirstOf('Ultra_Dynamic_Sky_C'); if not sky or not sky:IsValid() then return 'no UDS actor' end; sky['Time of Day'] = {{time}}; return sky['Time of Day']"
+    },
+    "weather_rain": {
+      "description": "TODO: force rain on/off through the Ultra Dynamic Weather actor (property names to confirm with class_describe on UDW_C).",
+      "kind": "lua",
+      "args": [ { "name": "on", "default": true } ],
+      "code": "local w = FindFirstOf('Ultra_Dynamic_Weather_C'); if not w then return 'no UDW actor' end; return 'TODO: confirm rain property via class_describe'"
+    },
+    "give_item": {
+      "description": "Spawn a JigSInventory pickup of class {{class}} in front of the player and run its F-interact path (OnBeginInteract + OnExecuteInteract), which equips or stores it. Verified in game: equips into a free slot, otherwise stores; ammo and magazines land in the pockets a moment later.",
+      "kind": "lua",
+      "args": [ { "name": "class", "required": true }, { "name": "distance", "default": 150 } ],
+      "code": "local pc, pawn = UE5MCP.player(); if not pawn then return 'no pawn' end; local cls = StaticFindObject('{{class}}'); if not cls or not cls:IsValid() then local a, found = LoadAsset('{{class}}'); cls = a end; if not cls or not cls:IsValid() then return 'class not loadable: {{class}}' end; local loc = pawn:K2_GetActorLocation(); local fwd = pawn:GetActorForwardVector(); local world = pawn:GetWorld(); if not world:IsValid() then return 'no world' end; local actor = world:SpawnActor(cls, {X = loc.X + fwd.X * {{distance}}, Y = loc.Y + fwd.Y * {{distance}}, Z = loc.Z}, {Pitch = 0, Yaw = 0, Roll = 0}); if not actor or not actor:IsValid() then return 'spawn failed' end; pcall(function() actor:OnBeginInteract(pawn, {}) end); pcall(function() actor:OnExecuteInteract(pawn, 0) end); return actor:GetFullName()"
+    },
+    "quicksave": {
+      "description": "TODO: EasyMultiSave quicksave. Confirm the game's save entry point (EMS 'Save Game Actors' / BP_MenuSystemGameInstance function) with class_describe before relying on this.",
+      "kind": "calls",
+      "args": [],
+      "steps": [
+        { "tool": "console_exec", "params": { "command": "ems.SaveGame" } }
+      ]
+    },
+    "load_slot": {
+      "description": "TODO: load a named EasyMultiSave slot. Needs the slot-select function on the game instance.",
+      "kind": "lua",
+      "args": [ { "name": "slot", "required": true } ],
+      "code": "return 'TODO: find load-slot entry point on BP_MenuSystemGameInstance / EMS'"
+    },
+    "unbind_console_safety": {
+      "description": "Example of a plain call sequence: open the UE4SS console state check.",
+      "kind": "calls",
+      "args": [],
+      "steps": [
+        { "tool": "player_info", "params": {} }
+      ]
+    }
+  }
+}

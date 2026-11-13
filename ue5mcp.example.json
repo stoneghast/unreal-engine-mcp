@@ -1,0 +1,11 @@
+{
+  "game_exe": "<game folder>/<Project>/Binaries/Win64/<Project>-Win64-Shipping.exe",
+  "game_args": [],
+  "game_root": "<game folder>",
+  "session_dir": "sessions",
+  "profile": "profiles/theparasites",
+  "bridge_port": 19777,
+  "connect_timeout_ms": 1500,
+  "page_bytes": 60000,
+  "default_timeout_ms": 5000
+}

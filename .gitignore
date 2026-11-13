@@ -1,0 +1,20 @@
+# build output
+/build*/
+/out/
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.dll
+*.exe
+
+# IDE
+/.vs/
+/.vscode/
+/.idea/
+*.swp
+
+# runtime
+/sessions/
+ue5mcp.local.json
